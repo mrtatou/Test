@@ -4,13 +4,23 @@ import numpy as np
 import PIL
 import random
 
-file = np.copy(PIL.Image.open('Terre rouge.jpg', mode='r'))
+file = np.copy(PIL.Image.open('C:/Users/titou/Documents/VSCode C/test/Terre rouge.jpg', mode='r'))
+
+taille = file.shape
+hauteur = taille[0] # nombre de lignes
+largeur = taille[1] # nombre de colonnes
+
+def distance(x1:int , x2:int , y1:int , y2:int ): #simple calcul de distance
+    return np.sqrt((x1-x2)**2+(y1-y2)**2)
+
+
+def min_list(l):
+    mini = 0
+    for k in range(1,len(l)):
+        if l[k]<l[mini]:
+            mini=k
 
 def init_couleurs(image, nombre_couleurs):
-
-    taille = file.shape
-    hauteur = taille[0] # nombre de lignes
-    largeur = taille[1] # nombre de colonnes
     
     coordonnees_couleurs=np.empty((nombre_couleurs, 2)) #Sera utilisé plus tard pour avoir des clusters éloignés (weight les probabilités de répartition proportionnellement à la distance aux autres clusters)
     #random semble pas pouvoir faire ça très bien, utilisant random.choice(population, weights) et on va éviter de calculer la distance à tous les clusters pour tous les pixels de l'image pour la proba...
@@ -18,14 +28,36 @@ def init_couleurs(image, nombre_couleurs):
     
     # Boucle de génération des couleurs initiales
     for i in range(nombre_couleurs):
-        rand_row = random.randint(0,hauteur)
-        rand_col = random.randint(0,largeur)
-        coordonnees_couleurs[i] = [rand_row, rand_col]
+        ligne_aleatoire = random.randint( 0, hauteur)
+        colonne_aleatoire = random.randint(0, largeur)
+        coordonnees_couleurs[i] = [ ligne_aleatoire, colonne_aleatoire ]
+        couleurs[i] = image[ ligne_aleatoire ] [ colonne_aleatoire ]
         for j in range(i):
-            if np.sqrt( (rand_row - coordonnees_couleurs[i][0])**2 + (rand_col - coordonnees_couleurs[i][1])**2) <=  0: #valeur arbitraire de distance pour l'instant vide, pour que les clusters soient éloignés un minimum.
+            if distance( colonne_aleatoire, coordonnees_couleurs[i][1], ligne_aleatoire, coordonnees_couleurs[i][0] ) <=  np.sqrt(50): #valeur arbitraire de distance pour l'instant vide, pour que les clusters soient éloignés un minimum.
+            #Ici sqrt(50) car il s'agit de la diagonale d'un carré de 5 pixels par 5 pixels
                 j=i-2 #arrête la boucle actuelle après cette itération
                 i=i-1 #redescend i pour générer de nouvelles coordonnees
-        
-    couleurs[i] =image[rand_row,rand_col]
+    
+    return [couleurs, coordonnees_couleurs]
 
-    return (coordonnees_couleurs, couleurs)
+
+def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
+    
+    for i in range(nb_iter):
+        
+        for ligne in range(hauteur):
+            for colonne in range(largeur): # j'avoue avoir du mal à comprendre le programme de base, dont je comprends qu'il semble faire un calcul de norme sur les couleurs?
+                couleurs_proches=[]
+                for k in coordonnees_couleurs: #On regarde de quelle couleur le pixel est le plus proche
+                    dist= distance(k[0],ligne, k[1], colonne)
+                    couleurs_proches.append(dist)
+                
+                couleur_la_plus_proche=min_list(couleurs_proches) #indice de la couleur la plus proche, dont on pourra alors chercher les valeurs rgb
+
+                
+                
+                
+
+#couleurs_initiales=init_couleurs(image)
+#update_couleurs(image, couleurs_initiales[0], couleurs_initiales[1], 20)
+print(init_couleurs(file, 12))
