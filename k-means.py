@@ -4,7 +4,7 @@ import numpy as np
 import PIL
 import random
 
-file = np.copy(PIL.Image.open('C:/Users/titou/Documents/VSCode C/test/Terre rouge.jpg', mode='r'))
+file = np.copy(PIL.Image.open('Terre rouge.jpg', mode='r'))
 
 taille = file.shape
 hauteur = taille[0] # nombre de lignes
