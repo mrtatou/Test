@@ -5,9 +5,9 @@ import PIL
 import random
 import sys
 
-
 assert(len(sys.argv)==2)
-file = np.copy(PIL.Image.open(sys.argv[1], mode='r'))
+
+file = np.copy(PIL.Image.open(sys.argv[1], mode='r')) #On ouvre l'image sous forme de matrice, copiée dans la variable file
 
 taille = file.shape
 hauteur = taille[0] # nombre de lignes
@@ -41,7 +41,7 @@ def init_couleurs(image, nombre_couleurs):
                 j=i-2 #arrête la boucle actuelle après cette itération
                 i=i-1 #redescend i pour générer de nouvelles coordonnees
     
-    return [couleurs, coordonnees_couleurs]
+    return [couleurs, coordonnees_couleurs] #pertinence du renvoi de coordonnees_couleurs remise en question une fois de plus
 
 
 def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
@@ -49,13 +49,15 @@ def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
     for i in range(nb_iter):
         
         for ligne in range(hauteur):
-            for colonne in range(largeur): # j'avoue avoir du mal à comprendre le programme de base, dont je comprends qu'il semble faire un calcul de norme sur les couleurs?
+            for colonne in range(largeur):
                 couleurs_proches=[]
-                for k in coordonnees_couleurs: #On regarde de quelle couleur le pixel est le plus proche
-                    dist= distance(k[0],ligne, k[1], colonne)
+                pixel=image[ligne][colonne]
+                for k in couleurs: #On cherche de quelle couleur prédéfinie le pixel se rapproche le plus
+                    dist= np.sqrt(sum((pixel[i]-k[i])**2 for i in range(3))) #en comparant la "distance" aux couleurs précédemment définies, selon l'écart à la valeur r, g et b de chacune d'entre elles
                     couleurs_proches.append(dist)
                 
-                couleur_la_plus_proche=min_list(couleurs_proches) #indice de la couleur la plus proche, dont on pourra alors chercher les valeurs rgb
+                couleur_la_plus_proche=min_list(couleurs_proches) 
+
 
                 
                 
