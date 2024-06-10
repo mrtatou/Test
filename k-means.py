@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import PIL
 import random
+import sys
 
-file = np.copy(PIL.Image.open('Terre rouge.jpg', mode='r'))
+
+assert(len(sys.argv)==2)
+file = np.copy(PIL.Image.open(sys.argv[1], mode='r'))
 
 taille = file.shape
 hauteur = taille[0] # nombre de lignes
