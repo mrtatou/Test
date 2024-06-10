@@ -46,7 +46,7 @@ def init_couleurs(image, nombre_couleurs):
 
 
 def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
-    nouvelles_couleurs = 
+    
     for i in range(nb_iter):
         
         for ligne in range(hauteur):
@@ -57,10 +57,7 @@ def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
                     dist= np.sqrt(sum((pixel[i]-k[i])**2 for i in range(3))) #en comparant la "distance" aux couleurs précédemment définies, selon l'écart à la valeur r, g et b de chacune d'entre elles
                     couleurs_proches.append(dist)
                 
-                couleur_la_plus_proche=min_list(couleurs_proches) #indice de la couleur la plus proche dans couleurs_proches
-                .append(pixel)
-                    
-
+                couleur_la_plus_proche=min_list(couleurs_proches)
 
 
                 
