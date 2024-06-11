@@ -24,6 +24,9 @@ def min_list(l):
             mini=k
     return mini
 
+
+
+
 def init_couleurs(image, nombre_couleurs):
     
     coordonnees_couleurs=np.empty((nombre_couleurs, 2)) #Sera utilisé plus tard pour avoir des clusters éloignés (weight les probabilités de répartition proportionnellement à la distance aux autres clusters)
@@ -42,11 +45,11 @@ def init_couleurs(image, nombre_couleurs):
                 j=i-2 #arrête la boucle actuelle après cette itération
                 i=i-1 #redescend i pour générer de nouvelles coordonnees
     
-    return [couleurs, coordonnees_couleurs] #pertinence du renvoi de coordonnees_couleurs remise en question une fois de plus
+    return couleurs #pertinence du renvoi de coordonnees_couleurs remise en question une fois de plus
 
 
-def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
-    
+def update_couleurs(image, couleurs, nb_iter):
+    liste = [ [] for i in couleurs]
     for i in range(nb_iter):
         
         for ligne in range(hauteur):
@@ -55,15 +58,19 @@ def update_couleurs(image, couleurs, coordonnees_couleurs, nb_iter):
                 pixel=image[ligne][colonne]
                 for k in couleurs: #On cherche de quelle couleur prédéfinie le pixel se rapproche le plus
                     dist= np.sqrt(sum((pixel[i]-k[i])**2 for i in range(3))) #en comparant la "distance" aux couleurs précédemment définies, selon l'écart à la valeur r, g et b de chacune d'entre elles
-                    couleurs_proches.append(dist)
+                    couleurs_proches.append(dist) #le range 3 est un peu douteux parce que quand on fera sur d'autres trucs (ex la compression sur la chrominance) ce sera plus 3
                 
-                couleur_la_plus_proche=min_list(couleurs_proches)
-
-
+                couleur_la_plus_proche=min_list(couleurs_proches) #renvoie l'indice de la couleur la plus proche
+                liste[couleur_la_plus_proche].append([pixel]) #On ajoute la couleur du pixel à l'indice de la couleur la plus proche
+                #liste c'est une liste... de listes (1 par couleur)... de listes à 3 éléments (les pixels assimilés à cette couleur)
+        
+        for k in range(len(couleurs)):
+            couleurs[k]= np.mean(liste[k], axis = 0)  #Modification des couleurs vers la moyenne des couleurs des pixels qui lui ont été associés
+            #fonction np.mean utilisée pour plus d'adaptabilité, par exemple quand on traitera que 2 coordonnées (CrB, CrR)
+    return couleurs
                 
                 
                 
-
-#couleurs_initiales=init_couleurs(image)
-#update_couleurs(image, couleurs_initiales[0], couleurs_initiales[1], 20)
-print(init_couleurs(file, 12))
+couleurs_initiales =init_couleurs(file, 12)
+print(couleurs_initiales)
+print(update_couleurs(file, couleurs_initiales, 1))
