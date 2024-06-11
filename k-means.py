@@ -7,8 +7,8 @@ import sys
 assert(len(sys.argv)==4)
 
 file = np.copy(PIL.Image.open(sys.argv[1], mode='r')) #On ouvre l'image sous forme de matrice, copiée dans la variable file
-nb_couleurs:int= sys.argv[2]
-nb_iter:int = sys.argv[3]
+nb_couleurs= int(sys.argv[2])
+nb_iter= int(sys.argv[3])
 
 
 
@@ -91,6 +91,7 @@ def update_image( image, couleurs):
                 
 #Il n'y a plus qu'à adapter le programme à d'autres "découpages" de l'image (RGBA, Chrominances) et à essayer de l'optimiser, peut-être.
 #Note: actuellement le programme semble très lent, à tester sur différentes configurations matérielles.
+#Note 2 - après test sur le pc perso - ça mange de la mémoire en quantité non négligeable (test sur une image de dimension 1920x1080, le résultat est visible sur l'accueil du repo - test arrêté à la main avant de voir la totalité de ma mémoire mangée par le programme)
 
 couleurs_initiales =init_couleurs(file, 12)
 nouvelles_couleurs=update_couleurs(file,couleurs_initiales,nb_iter)
