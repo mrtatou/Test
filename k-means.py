@@ -4,10 +4,11 @@ import PIL
 import random
 import sys
 
-assert(len(sys.argv)==3)
+assert(len(sys.argv)==4)
 
 file = np.copy(PIL.Image.open(sys.argv[1], mode='r')) #On ouvre l'image sous forme de matrice, copiée dans la variable file
 nb_couleurs:int= sys.argv[2]
+nb_iter:int = sys.argv[3]
 
 
 
@@ -89,9 +90,9 @@ def update_image( image, couleurs):
 
                 
 #Il n'y a plus qu'à adapter le programme à d'autres "découpages" de l'image (RGBA, Chrominances) et à essayer de l'optimiser, peut-être.
-
+#Note: actuellement le programme semble très lent, à tester sur différentes configurations matérielles.
 
 couleurs_initiales =init_couleurs(file, 12)
-nouvelles_couleurs=update_couleurs(file,couleurs_initiales,10)
+nouvelles_couleurs=update_couleurs(file,couleurs_initiales,nb_iter)
 nouvelle_image=update_image(file,nouvelles_couleurs)
 plt.imsave("compressed.jpg", nouvelle_image)
