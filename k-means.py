@@ -1,13 +1,15 @@
-import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL
 import random
 import sys
 
-assert(len(sys.argv)==2)
+assert(len(sys.argv)==3)
 
 file = np.copy(PIL.Image.open(sys.argv[1], mode='r')) #On ouvre l'image sous forme de matrice, copiée dans la variable file
+nb_couleurs:int= sys.argv[2]
+
+
 
 taille = file.shape
 hauteur = taille[0] # nombre de lignes
@@ -69,9 +71,27 @@ def update_couleurs(image, couleurs, nb_iter):
             #fonction np.mean utilisée pour plus d'adaptabilité, par exemple quand on traitera que 2 coordonnées (CrB, CrR)
     return couleurs
                 
-                
-                
-couleurs_initiales =init_couleurs(file, 12)
-print(couleurs_initiales)
-print(update_couleurs(file, couleurs_initiales, 1))
+#Une fois les couleurs définies et mises à jour plusieurs fois sur la base des couleurs présentes dans l'image,
+#on peut désormais réduire l'image à ces couleurs.
 
+def update_image( image, couleurs):
+    for ligne in range(hauteur):
+        for colonne in range(largeur):
+            #On refait en fait la même chose que dans la fonction update...
+            couleurs_proches=[]
+            pixel=image[ligne][colonne]
+            for k in couleurs: 
+                dist= np.sqrt(sum((pixel[i]-k[i])**2 for i in range(3))) 
+                couleurs_proches.append(dist) 
+            couleur_la_plus_proche=min_list(couleurs_proches)
+            image[ligne][colonne]=couleurs[couleur_la_plus_proche]
+    return image
+
+                
+#Il n'y a plus qu'à adapter le programme à d'autres "découpages" de l'image (RGBA, Chrominances) et à essayer de l'optimiser, peut-être.
+
+
+couleurs_initiales =init_couleurs(file, 12)
+nouvelles_couleurs=update_couleurs(file,couleurs_initiales,10)
+nouvelle_image=update_image(file,nouvelles_couleurs)
+plt.imsave("compressed.jpg", nouvelle_image)
