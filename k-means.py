@@ -74,13 +74,4 @@ def update_couleurs(image, couleurs, nb_iter):
 couleurs_initiales =init_couleurs(file, 12)
 print(couleurs_initiales)
 print(update_couleurs(file, couleurs_initiales, 1))
-                couleur_la_plus_proche=min_list(couleurs_proches) #indice de la couleur la plus proche dans couleurs_proches
 
-
-                
-                
-                
-
-#couleurs_initiales=init_couleurs(image)
-#update_couleurs(image, couleurs_initiales[0], couleurs_initiales[1], 20)
-print(init_couleurs(file, 12))
