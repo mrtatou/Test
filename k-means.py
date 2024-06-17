@@ -10,7 +10,7 @@ file = np.copy(PIL.Image.open(sys.argv[1], mode='r')) #On ouvre l'image sous for
 nb_couleurs= int(sys.argv[2])
 nb_iter= int(sys.argv[3])
 type_fichier = int(sys.argv[4]) # 0 pour YCbCr; 1 pour RGB; 2 pour RGBA
-
+#Note: les jpg sont par défaut en RGB, les png en RGBA, à prendre en compte d'une manière ou d'une autre.
 
 taille = file.shape
 hauteur = taille[0] # nombre de lignes
@@ -54,39 +54,46 @@ def init_couleurs(image, nombre_couleurs):
 
 def update_couleurs(image, couleurs, nb_iter):
     liste = [ [] for i in couleurs]
+    ind = 0
+    distmin = 510 #sqrt(4*255**2), valeur maximale possible de distance ici (4 coordonnées au max)
     for i in range(nb_iter):
         
         for ligne in range(hauteur):
             for colonne in range(largeur):
-                couleurs_proches=[]
                 pixel=image[ligne][colonne]
-                for k in couleurs: #On cherche de quelle couleur prédéfinie le pixel se rapproche le plus
-                    dist= np.sqrt(sum((pixel[i]-k[i])**2 for i in range(3))) #en comparant la "distance" aux couleurs précédemment définies, selon l'écart à la valeur r, g et b de chacune d'entre elles
-                    couleurs_proches.append(dist) #le range 3 est un peu douteux parce que quand on fera sur d'autres trucs (ex la compression sur la chrominance) ce sera plus 3
-                #Faut virer cette liste là
-                couleur_la_plus_proche=min_list(couleurs_proches) #renvoie l'indice de la couleur la plus proche
-                liste[couleur_la_plus_proche].append([pixel]) #On ajoute la couleur du pixel à l'indice de la couleur la plus proche
+                for k, c in enumerate(couleurs): #On cherche de quelle couleur prédéfinie le pixel se rapproche le plus
+                    dist= np.sqrt(sum((pixel[i]-c[i])**2 for i in range(type_fichier+2))) #en comparant la "distance" aux couleurs précédemment définies
+                    if dist < distmin:
+                        distmin = dist
+                        ind=k
+                liste[ind].append([pixel]) #On ajoute la couleur du pixel à l'indice de la couleur la plus proche
                 #liste c'est une liste... de listes (1 par couleur)... de listes à 3 éléments (les pixels assimilés à cette couleur)
-        
-        for k in range(len(couleurs)):
+                #difficile de faire mieux car on ne connaît pas à l'avance le nombre d'éléments qui se trouveront assimilés ici.
+            #NOTE: Je devrais ici faire la moyenne à chaque couleur, ce sera plus pratique que de stocker une GIGA LISTE
+        for k, c in enumerate(couleurs):
             couleurs[k]= np.mean(liste[k], axis = 0)  #Modification des couleurs vers la moyenne des couleurs des pixels qui lui ont été associés
-            #fonction np.mean utilisée pour plus d'adaptabilité, par exemple quand on traitera que 2 coordonnées (CrB, CrR)
+            #fonction np.mean utilisée pour plus d'adaptabilité.
+            # enumerate pour eviter un range(len), mais son utilité est douteuse ici comparé à un range(len)
+
     return couleurs
                 
 #Une fois les couleurs définies et mises à jour plusieurs fois sur la base des couleurs présentes dans l'image,
 #on peut désormais réduire l'image à ces couleurs.
 
 def update_image( image, couleurs):
+    ind = 0
+    distmin = 510
     for ligne in range(hauteur):
         for colonne in range(largeur):
             #On refait en fait la même chose que dans la fonction update...
-            couleurs_proches=[]
+            #comment alors éviter cette repetition?
             pixel=image[ligne][colonne]
-            for k in couleurs: 
-                dist= np.sqrt(sum((pixel[i]-k[i])**2 for i in range(type_fichier+2))) 
-                couleurs_proches.append(dist) 
-            couleur_la_plus_proche=min_list(couleurs_proches)
-            image[ligne][colonne]=couleurs[couleur_la_plus_proche]
+            for k, c in enumerate(couleurs): 
+                dist= np.sqrt(sum((pixel[i]-c[i])**2 for i in range(type_fichier+2))) 
+                if dist < distmin:
+                    distmin = dist
+                    ind=k
+            image[ligne][colonne]=couleurs[ind]
     return image
 
                 
