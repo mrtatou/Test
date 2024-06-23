@@ -31,8 +31,8 @@ def init_couleurs(image, nombre_couleurs):
     
     # Boucle de génération des couleurs initiales
     for i in range(nombre_couleurs):
-        ligne_aleatoire = random.randint( 0, hauteur)
-        colonne_aleatoire = random.randint(0, largeur)
+        ligne_aleatoire = random.randint( 0, hauteur-1)
+        colonne_aleatoire = random.randint(0, largeur-1)
         coordonnees_couleurs[i] = [ ligne_aleatoire, colonne_aleatoire ]
         couleurs[i] = image[ ligne_aleatoire ] [ colonne_aleatoire ]
         for j in range(i):
@@ -99,4 +99,4 @@ def update_image( image, couleurs):
 couleurs_initiales =init_couleurs(file, 12)
 nouvelles_couleurs=update_couleurs(file,couleurs_initiales, nb_iter)
 nouvelle_image = Image.fromarray(update_image(file, nouvelles_couleurs))
-nouvelle_image.save("compressed2.jpg")
+nouvelle_image.save("compressed2.png")
