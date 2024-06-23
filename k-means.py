@@ -45,11 +45,11 @@ def init_couleurs(image, nombre_couleurs):
 
 
 def update_couleurs(image, couleurs, nb_iter):
-    liste = [ [] for _ in couleurs]
     ind = 0
     distmin = 510 #sqrt(4*255**2), valeur maximale possible de distance ici (4 coordonnées au max)
     for _ in range(nb_iter):
-        
+        liste = [ [] for _ in couleurs] #Effectivement, reset la liste à chaque itération ça peut être utile.
+
         for ligne in range(hauteur):
             for colonne in range(largeur):
                 pixel=image[ligne][colonne]
