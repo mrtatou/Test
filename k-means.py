@@ -1,9 +1,12 @@
 import numpy as np
 from PIL import Image
 import random
+import time
 import sys
 
 assert(len(sys.argv)==5)
+
+temps_db = time.time()
 
 file = np.copy(Image.open(sys.argv[1], mode='r')) #On ouvre l'image sous forme de matrice, copiée dans la variable file
 nb_couleurs= int(sys.argv[2])
@@ -40,13 +43,13 @@ def init_couleurs(image, nombre_couleurs):
             #Ici sqrt(50) car il s'agit de la diagonale d'un carré de 5 pixels par 5 pixels
                 j=i-2 #arrête la boucle actuelle après cette itération
                 i=i-1 #redescend i pour générer de nouvelles coordonnees
-    
+    print(couleurs)
     return couleurs #pertinence du renvoi de coordonnees_couleurs remise en question une fois de plus
 
 
 def update_couleurs(image, couleurs, nb_iter):
     ind = 0
-    for _ in range(nb_iter):
+    for n in range(nb_iter):
         flag = 0 
         liste = [ [0,0,0] for _ in couleurs] #Effectivement, reset la liste à chaque itération ça peut être utile.
         liste_iter = [0 for _ in couleurs]
@@ -65,13 +68,16 @@ def update_couleurs(image, couleurs, nb_iter):
 
         for k in range(nb_couleurs):
             if liste_iter[k] != 0: # vérification inutile car le pixel sera toujours au plus proche de lui-même
-                prec=couleurs[k]
+                prec = [ couleurs[k][i] for i in range(type_fichier + 2)] #Copie de couleurs[k]
                 couleurs[k]= [ round(i/liste_iter[k], 0) for i in liste[k]] #Modification des couleurs vers la moyenne des couleurs des pixels qui lui ont été associés
-                
-                if (prec[i]==couleurs[k][i] for i in range(len(prec))):
-                    flag+=1
+
+                for i in range(len(prec)): #où len(prec) = type_fichier+2    
+                    if (prec[i]==couleurs[k][i]): #NOTE: Le flag est augmente à chaque fois, il y a un problème
+                        flag+=1
         
-        if flag == nb_couleurs:
+        if flag == (type_fichier+2)*nb_couleurs:
+            print(n)
+            print(couleurs)
             return couleurs #retour en avance de couleurs pour arreter des iterations inutiles.
     
     return couleurs
@@ -104,3 +110,6 @@ couleurs_initiales =init_couleurs(file, 12)
 nouvelles_couleurs=update_couleurs(file,couleurs_initiales, nb_iter)
 nouvelle_image = Image.fromarray(update_image(file, nouvelles_couleurs))
 nouvelle_image.save("compressed2.png")
+
+temps_fin = time.time()
+print(temps_fin - temps_db)
