@@ -46,29 +46,34 @@ def init_couleurs(image, nombre_couleurs):
 
 def update_couleurs(image, couleurs, nb_iter):
     ind = 0
-    distmin = 510 #sqrt(4*255**2), valeur maximale possible de distance ici (4 coordonnées au max)
     for _ in range(nb_iter):
-        liste = [ [] for _ in couleurs] #Effectivement, reset la liste à chaque itération ça peut être utile.
-
+        flag = 0 
+        liste = [ [0,0,0] for _ in couleurs] #Effectivement, reset la liste à chaque itération ça peut être utile.
+        liste_iter = [0 for _ in couleurs]
         for ligne in range(hauteur):
             for colonne in range(largeur):
-                pixel=image[ligne][colonne]
-                distmin=510
+                pixel = image[ligne][colonne]
+                distmin = 260100 # 4 * (255-0)^2
                 for k, c in enumerate(couleurs): #On cherche de quelle couleur prédéfinie le pixel se rapproche le plus
-                    dist= np.sqrt(sum((pixel[i]-c[i])**2 for i in range(type_fichier+2))) #en comparant la "distance" aux couleurs précédemment définies
+                    dist= sum((pixel[i]-c[i])**2 for i in range(type_fichier+2)) #en comparant la "distance" aux couleurs précédemment définies; racine strictement croissante donc non utile ici.
                     if dist < distmin:
                         distmin = dist
-                        ind=k
-                liste[ind].append(pixel) #On ajoute la couleur du pixel à l'indice de la couleur la plus proche
-                #liste c'est une liste... de listes (1 par couleur)... de listes à 3 éléments (les pixels assimilés à cette couleur)
-                #difficile de faire mieux car on ne connaît pas à l'avance le nombre d'éléments qui se trouveront assimilés ici.
+                        ind = k
+                liste[ind] += pixel #On ajoute la valeur rgb à celle des pixels reliés à cette couleur
+                liste_iter[ind] +=1 #Objectif: reduire la conso mémoire en évitant de stocker toute l'image mais juste un triplet
 
 
-        for k in range(len(couleurs)):
-            couleurs[k]= np.mean(liste[k], axis = 0)  #Modification des couleurs vers la moyenne des couleurs des pixels qui lui ont été associés
-            #fonction np.mean utilisée pour plus d'adaptabilité. axis = 0 signifie que dans une liste pour une couleur, on fait la moyenne de la coord 1, celle de la 2, celle de la 3
-            # enumerate pour eviter un range(len), mais son utilité est douteuse ici comparé à un range(len)
-
+        for k in range(nb_couleurs):
+            if liste_iter[k] != 0: # vérification inutile car le pixel sera toujours au plus proche de lui-même
+                prec=couleurs[k]
+                couleurs[k]= [ round(i/liste_iter[k], 0) for i in liste[k]] #Modification des couleurs vers la moyenne des couleurs des pixels qui lui ont été associés
+                
+                if (prec[i]==couleurs[k][i] for i in range(len(prec))):
+                    flag+=1
+        
+        if flag == nb_couleurs:
+            return couleurs #retour en avance de couleurs pour arreter des iterations inutiles.
+    
     return couleurs
                 
 #Une fois les couleurs définies et mises à jour plusieurs fois sur la base des couleurs présentes dans l'image,
@@ -76,15 +81,14 @@ def update_couleurs(image, couleurs, nb_iter):
 
 def update_image( image, couleurs):
     ind = 0
-    distmin = 510
     for ligne in range(hauteur):
         for colonne in range(largeur):
-            distmin= 510
+            distmin= 260100
             #On refait en fait la même chose que dans la fonction update...
             #comment alors éviter cette repetition?
             pixel=image[ligne][colonne]
             for k, c in enumerate(couleurs): 
-                dist= np.sqrt(sum((pixel[i]-c[i])**2 for i in range(type_fichier+2))) 
+                dist= sum((pixel[i]-c[i])**2 for i in range(type_fichier+2)) 
                 if dist < distmin:
                     distmin = dist
                     ind=k
