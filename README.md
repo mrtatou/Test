@@ -11,3 +11,5 @@ Après modifications, le programme a une consommation mémoire raisonnable et pe
 \
 En revanche une très grande image en format vertical (3472x4624) s'est retrouvée tournée à 90°, étrange
 ![Do a flip!](https://github.com/mrtatou/Test/assets/100464038/206eca93-c66d-4077-a03c-226faff9c812)
+\
+A noter que cette "compression" (12 couleurs, 10 itérations) a pris 58 minutes et augmenté la taille de l'image de 3.81 Mo à 4.55. Etrange
