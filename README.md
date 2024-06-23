@@ -3,3 +3,7 @@ TIPE pour l'instant largement inspiré de : https://towardsdatascience.com/clear
 
 Premiers tests... pas très concluants.\
 ![Yup, works just as intended](https://github.com/mrtatou/Test/assets/100464038/2a1ff18d-c39e-44af-9d04-802d3a3e62d6)
+
+Après modifications, le programme a une consommation mémoire raisonnable et peut compresser des images de taille usuelle (exemple: image de taille 1920x1200 réduit à 12 couleurs en 10 itérations)\
+![compressed2](https://github.com/mrtatou/Test/assets/100464038/4eb6c8de-8bbd-44ec-a384-014009a4c3c8)
+<sub>source de l'image originale: l'un des fonds d'écran windows 10 par défaut</sub>
