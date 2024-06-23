@@ -72,7 +72,7 @@ def update_couleurs(image, couleurs, nb_iter):
                 couleurs[k]= [ round(i/liste_iter[k], 0) for i in liste[k]] #Modification des couleurs vers la moyenne des couleurs des pixels qui lui ont été associés
 
                 for i in range(len(prec)): #où len(prec) = type_fichier+2    
-                    if (prec[i]==couleurs[k][i]): #NOTE: Le flag est augmente à chaque fois, il y a un problème
+                    if (prec[i]==couleurs[k][i]): 
                         flag+=1
         
         if flag == (type_fichier+2)*nb_couleurs:
